@@ -1,0 +1,25 @@
+/* Reset all default spacing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure full viewport coverage */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background: none;
+  overflow: hidden; /* You can set to auto if you need scroll later */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* App container */
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+}
