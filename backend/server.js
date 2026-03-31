@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import multer from "multer";
 import path from "path";
 import Message from "./models/Message.js";
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/authe.js";
 import messageRoutes from "./routes/message.js";
 import userRoutes from "./routes/user.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
