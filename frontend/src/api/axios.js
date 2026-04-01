@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://realtime-chat-app-1-p6hq.onrender.com/api", // backend base URL
+  baseURL: "https://realtime-chat-app-1-p6hq.onrender.com/api",
 });
 
-// Attach token automatically (for protected routes later)
+// Attach token automatically
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {
