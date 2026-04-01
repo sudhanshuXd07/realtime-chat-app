@@ -162,7 +162,7 @@ function Chat() {
   return (
     <div className="h-screen w-full flex bg-gradient-to-br from-[#1a0b2e] via-[#221133] to-[#0e0a18] text-white font-sans">
       {/* Sidebar */}
-      <div className="w-1/4 bg-black/60 border-r border-purple-700 flex flex-col">
+      <div className="w-1/4 bg-black/70 border-r border-purple-900 flex flex-col shadow-xl">
         {/* Profile header */}
         <div className="flex items-center gap-3 p-4 border-b border-purple-800">
           <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold">
