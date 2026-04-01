@@ -21,6 +21,9 @@ router.post("/register", async (req, res) => {
     res.json({ msg: "User registered successfully ✅" });
   } catch (err) {
     res.status(500).json({ msg: "Server error", error: err.message });
+    
+    console.log("Register body:", req.body);
+
   }
 });
 
@@ -49,6 +52,5 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
-console.log("Register body:", req.body);
 
 export default router;
