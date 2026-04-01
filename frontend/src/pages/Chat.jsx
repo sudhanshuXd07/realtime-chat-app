@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "../api/axios";
 
-const socket = io("http://localhost:4000"); // backend URL
+const socket = io("https://realtime-chat-app-1-p6hq.onrender.com"); // backend URL
 
 function Chat() {
   const navigate = useNavigate();

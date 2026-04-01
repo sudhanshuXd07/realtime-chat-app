@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:4000/api", // backend base URL
+  baseURL: "https://realtime-chat-app-1-p6hq.onrender.com", // backend base URL
 });
 
 // Attach token automatically (for protected routes later)
