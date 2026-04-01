@@ -1,6 +1,6 @@
 import express from "express";
 import Message from "../models/Message.js";
-import { verifyToken } from "../middleware/auth.js"; // ✅ correct import
+import { verifyToken } from "../middleware/auth2.js"; // ✅ correct import
 
 const router = express.Router();
 
