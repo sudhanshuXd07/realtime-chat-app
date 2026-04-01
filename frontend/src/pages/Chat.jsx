@@ -160,161 +160,157 @@ function Chat() {
   };
 
   return (
-    <div className="h-screen w-full flex bg-gradient-to-br from-[#1a0b2e] via-[#221133] to-[#0e0a18] text-white font-sans">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-black/70 border-r border-purple-900 flex flex-col shadow-xl">
-        {/* Profile header */}
-        <div className="flex items-center gap-3 p-4 border-b border-purple-800">
-          <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold">
-            {user?.username?.[0]?.toUpperCase()}
-          </div>
-          <div>
-            <h2 className="text-white text-lg font-semibold">{user?.username}</h2>
-            <p className="text-sm text-gray-400">Online</p>
-          </div>
-        </div>
+  <div className="h-screen w-full flex bg-gradient-to-br from-[#0f0a1f] via-[#1a0f2e] to-[#0b0615] text-white font-sans">
 
-        {/* Contacts list */}
-        <div className="flex-1 overflow-y-auto p-3">
-          <h3 className="text-purple-400 text-sm mb-2">People</h3>
-          <ul>
-            {onlineUsers.map((u) => (
-              <li
-                key={u}
-                onClick={() => setActiveChat({ _id: u, username: u })}
-                className={`p-3 rounded-md cursor-pointer mb-2 transition-all ${activeChat?._id === u
-                  ? "bg-purple-700 text-white"
-                  : "hover:bg-purple-800/40"
-                  }`}
-              >
-                {u === user?.id ? `${u} (You)` : u}
-              </li>
-            ))}
-          </ul>
-        </div>
+    {/* Sidebar */}
+    <div className="w-1/4 bg-white/5 backdrop-blur-lg border-r border-purple-900 flex flex-col shadow-2xl">
 
-        {/* Logout */}
-        <div className="p-3 border-t border-purple-800">
-          <button
-            onClick={() => {
-              localStorage.clear();
-              navigate("/");
-            }}
-            className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md font-semibold"
-          >
-            Logout
-          </button>
+      {/* Profile */}
+      <div className="flex items-center gap-3 p-4 border-b border-purple-800">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 flex items-center justify-center text-lg font-bold shadow-lg">
+          {user?.username?.[0]?.toUpperCase()}
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold">{user?.username}</h2>
+          <p className="text-xs text-green-400">● Online</p>
         </div>
       </div>
 
-      {/* Chat area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-purple-800 bg-black/50">
-
-          <h2 className="text-xl font-semibold text-purple-300">
-            {activeChat ? activeChat.username : "Select a user to chat"}
-          </h2>
-
-          <div className="flex gap-2">
-            <button
-              onClick={handleFindRandom}
-              className="bg-green-600 px-3 py-1 rounded"
+      {/* Users */}
+      <div className="flex-1 overflow-y-auto p-3">
+        <h3 className="text-purple-400 text-xs mb-2 uppercase tracking-wide">People</h3>
+        <ul>
+          {onlineUsers.map((u) => (
+            <li
+              key={u}
+              onClick={() => setActiveChat({ _id: u, username: u })}
+              className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer mb-2 transition-all ${
+                activeChat?._id === u
+                  ? "bg-purple-600 shadow-lg scale-[1.02]"
+                  : "hover:bg-purple-800/40"
+              }`}
             >
-              Random
-            </button>
-
-            {randomMode && (
-              <>
-                <button
-                  onClick={handleSkip}
-                  className="bg-yellow-500 px-3 py-1 rounded"
-                >
-                  Next
-                </button>
-
-                <button
-                  onClick={handleAddFriend}
-                  className="bg-blue-500 px-3 py-1 rounded"
-                >
-                  Add Friend
-                </button>
-
-                <button
-                  onClick={handleEndChat}
-                  className="bg-red-500 px-3 py-1 rounded"
-                >
-                  End
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-[#110920] via-[#1c0f3a] to-[#0e0a18]">
-          {messages.map((m, i) => {
-            const mine = m.sender === user?.id;
-            return (
-              <div
-                key={i}
-                className={`flex mb-3 ${mine ? "justify-end" : "justify-start"
-                  }`}
-              >
-                <div
-                  className={`max-w-[70%] p-3 rounded-xl text-sm shadow-md ${mine
-                    ? "bg-purple-600 text-white rounded-br-none"
-                    : "bg-gray-800 text-gray-200 rounded-bl-none"
-                    }`}
-                >
-                  <p>{m.text}</p>
-                  <span className="block text-[10px] opacity-70 mt-1 text-right">
-                    {m.createdAt
-                      ? new Date(m.createdAt).toLocaleTimeString()
-                      : ""}
-                  </span>
-                </div>
+              <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-sm">
+                {u[0]}
               </div>
-            );
-          })}
+              <span className="text-sm">
+                {u === user?.id ? "You" : u.slice(0, 8)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-          {isPartnerTyping && (
-            <div className="text-sm text-gray-400 italic">…typing</div>
+      {/* Logout */}
+      <div className="p-3 border-t border-purple-800">
+        <button
+          onClick={() => {
+            localStorage.clear();
+            navigate("/");
+          }}
+          className="w-full py-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 hover:scale-105 transition shadow-lg"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+
+    {/* Chat Area */}
+    <div className="flex-1 flex flex-col">
+
+      {/* Header */}
+      <div className="h-16 flex items-center justify-between px-6 border-b border-purple-800 bg-white/5 backdrop-blur-md">
+        <h2 className="text-lg font-semibold text-purple-300">
+          {activeChat ? activeChat.username : "Select a user"}
+        </h2>
+
+        <div className="flex gap-2">
+          <button
+            onClick={handleFindRandom}
+            className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg shadow"
+          >
+            Random
+          </button>
+
+          {randomMode && (
+            <>
+              <button onClick={handleSkip} className="bg-yellow-500 px-3 py-1 rounded-lg">
+                Next
+              </button>
+              <button onClick={handleAddFriend} className="bg-blue-500 px-3 py-1 rounded-lg">
+                Add
+              </button>
+              <button onClick={handleEndChat} className="bg-red-500 px-3 py-1 rounded-lg">
+                End
+              </button>
+            </>
           )}
         </div>
+      </div>
 
-        {/* Input area */}
-        {activeChat && (
-          <div className="flex items-center gap-2 p-4 bg-black/60 border-t border-purple-800">
-            <input
-              type="text"
-              value={message}
-              placeholder="Type a message..."
-              onChange={(e) => {
-                setMessage(e.target.value);
-                if (!randomMode) {
-                  notifyTyping(activeChat._id);
-                }
-              }}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              className="flex-1 bg-gray-900 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-purple-600"
-            />
-            <input
-              type="file"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="text-xs text-gray-400"
-            />
-            <button
-              onClick={sendMessage}
-              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg font-semibold text-white"
-            >
-              Send
-            </button>
+      {/* Messages */}
+      <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-[#140a2a] via-[#1c0f3a] to-[#0c0618]">
+
+        {messages.map((m, i) => {
+          const mine = m.sender === user?.id;
+
+          return (
+            <div key={i} className={`flex mb-3 ${mine ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-lg transition ${
+                  mine
+                    ? "bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-br-sm"
+                    : "bg-gray-800 text-gray-200 rounded-bl-sm"
+                }`}
+              >
+                <p>{m.text}</p>
+                <span className="block text-[10px] opacity-70 mt-1 text-right">
+                  {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ""}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+
+        {isPartnerTyping && (
+          <div className="text-sm text-gray-400 italic animate-pulse">
+            typing...
           </div>
         )}
       </div>
+
+      {/* Input */}
+      {activeChat && (
+        <div className="flex items-center gap-2 p-4 bg-white/5 backdrop-blur-md border-t border-purple-800">
+          <input
+            type="text"
+            value={message}
+            placeholder="Type a message..."
+            onChange={(e) => {
+              setMessage(e.target.value);
+              if (!randomMode) notifyTyping(activeChat._id);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            className="flex-1 bg-gray-900/80 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+          />
+
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="text-xs text-gray-400"
+          />
+
+          <button
+            onClick={sendMessage}
+            className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 py-2 rounded-xl shadow hover:scale-105 transition"
+          >
+            Send
+          </button>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 }
 
 export default Chat;
