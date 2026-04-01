@@ -20,7 +20,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 app.use("/api/messages", uploadRoutes);
@@ -79,7 +82,7 @@ const server = app.listen(PORT, () => {
 // ✅ Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4500",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
