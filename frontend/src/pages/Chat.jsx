@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "../api/axios";
 
-const socket = io("https://realtime-chat-app-1-p6hq.onrender.com"); // backend URL
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://realtime-chat-app-1-p6hq.onrender.com";
+const socket = io(SOCKET_URL);
 
 function Chat() {
   const navigate = useNavigate();
@@ -33,7 +34,12 @@ function Chat() {
     const token = localStorage.getItem("token");
     if (user) {
       API.get("/users", { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => setContacts(res.data))
+        .then((res) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:fetchContacts',message:'contacts loaded',data:{count:res.data?.length},timestamp:Date.now(),hypothesisId:'A',runId:'post-fix'})}).catch(()=>{});
+          // #endregion
+          setContacts(res.data);
+        })
         .catch((err) => console.error("Error fetching users:", err));
     }
   }, [user]);
@@ -51,6 +57,13 @@ function Chat() {
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
     socket.emit("join", parsedUser.id);
+
+    // #region agent log
+    const onConnect = () => fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:socket',message:'socket connected',data:{socketId:socket.id},timestamp:Date.now(),hypothesisId:'D',runId:'post-fix'})}).catch(()=>{});
+    const onConnectError = (err) => fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:socket',message:'socket connect error',data:{error:err?.message},timestamp:Date.now(),hypothesisId:'D',runId:'post-fix'})}).catch(()=>{});
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onConnectError);
+    // #endregion
 
     socket.on("online_users", (users) => setOnlineUsers(users));
     socket.on("typing", ({ sender, isTyping }) => {
@@ -83,6 +96,8 @@ function Chat() {
     });
 
     return () => {
+      socket.off("connect");
+      socket.off("connect_error");
       socket.off("online_users");
       socket.off("receive_message");
       socket.off("typing");
