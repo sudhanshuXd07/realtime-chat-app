@@ -8,4 +8,46 @@ html, body, #root {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
+  background-color: #0A0A0A;
+  color: #F5F0E6;
+}
+
+/* Custom scrollbar — brown/cream on dark */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #7B4B28 #1E1E1E;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1E1E1E;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #7B4B28;
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #9A6639;
+}
+
+@layer components {
+  .auth-input {
+    @apply p-3 rounded-lg bg-cream-dark text-black border border-brown/20
+           placeholder:text-cream-dim focus:outline-none focus:ring-2 focus:ring-brown focus:border-brown;
+  }
+
+  .auth-btn {
+    @apply bg-brown hover:bg-brown-light text-cream font-semibold py-3 rounded-lg
+           transition shadow-md hover:shadow-glow;
+  }
+
+  .auth-link {
+    @apply text-brown-light cursor-pointer hover:text-brown hover:underline transition;
+  }
 }

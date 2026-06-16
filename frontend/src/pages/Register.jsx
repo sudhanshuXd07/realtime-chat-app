@@ -22,11 +22,16 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-br from-primary via-[#3a2d8a] to-dark text-light font-poppins">
-      <div className="bg-dark w-[400px] p-10 rounded-2xl border border-white/10 shadow-[0_0_40px_rgba(108,99,255,0.4)] text-center">
-        <h1 className="text-primary text-3xl font-bold mb-6">Chatzz 💬</h1>
+    <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-br from-black via-black-light to-brown-deeper font-poppins">
+      <div className="bg-cream w-[400px] p-10 rounded-2xl border border-brown/20 shadow-card text-center">
+        <h1 className="text-brown text-3xl font-bold mb-2">Chatzz 💬</h1>
+        <p className="text-cream-dim text-sm mb-6">Create your account</p>
 
-        {error && <p className="text-red-400 mb-2">{error}</p>}
+        {error && (
+          <p className="text-brown-deeper bg-brown/10 border border-brown/30 rounded-lg px-3 py-2 mb-4 text-sm">
+            {error}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
@@ -35,7 +40,7 @@ function Register() {
             placeholder="Username"
             value={form.username}
             onChange={handleChange}
-            className="p-3 rounded-md bg-[#1b1b1b] text-light border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="auth-input"
             required
           />
 
@@ -45,15 +50,16 @@ function Register() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="p-3 rounded-md bg-[#1b1b1b] text-light border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="auth-input"
             required
           />
 
-          <div className="text-left text-sm flex items-center gap-2">
+          <div className="text-left text-sm flex items-center gap-2 text-black">
             <input
               type="checkbox"
               checked={showPassword}
               onChange={() => setShowPassword(!showPassword)}
+              className="accent-brown"
             />
             <label>Show Password</label>
           </div>
@@ -64,23 +70,17 @@ function Register() {
             placeholder="Email ID"
             value={form.email}
             onChange={handleChange}
-            className="p-3 rounded-md bg-[#1b1b1b] text-light border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="auth-input"
             required
           />
 
-          <button
-            type="submit"
-            className="bg-primary hover:bg-[#7b72ff] text-white font-semibold py-3 rounded-lg transition"
-          >
+          <button type="submit" className="auth-btn">
             Register
           </button>
 
-          <p className="text-sm mt-3">
+          <p className="text-sm mt-3 text-black/70">
             Already have an account?{" "}
-            <span
-              className="text-[#a094ff] cursor-pointer hover:underline"
-              onClick={() => navigate("/")}
-            >
+            <span className="auth-link" onClick={() => navigate("/")}>
               Login
             </span>
           </p>

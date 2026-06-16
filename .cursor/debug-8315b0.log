@@ -1,0 +1,7 @@
+{"sessionId":"8315b0","location":"axios.js:responseError","message":"API request failed","data":{"url":"/auth/login","status":400,"msg":"User not found"},"timestamp":1781600314810,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"axios.js:responseError","message":"API request failed","data":{"url":"/auth/login","status":400,"msg":"User not found"},"timestamp":1781600325030,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"axios.js:responseError","message":"API request failed","data":{"url":"/auth/login","status":400,"msg":"User not found"},"timestamp":1781600333002,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"axios.js:responseError","message":"API request failed","data":{"url":"/auth/login","status":400,"msg":"Invalid credentials"},"timestamp":1781600377033,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600383057,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600634861,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"g0iiKYd4hSR8g37wAAAD"},"timestamp":1781600635401,"hypothesisId":"D","runId":"post-fix"}

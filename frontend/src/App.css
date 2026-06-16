@@ -9,9 +9,10 @@
 html, body, #root {
   width: 100%;
   height: 100%;
-  background: none;
-  overflow: hidden; /* You can set to auto if you need scroll later */
+  background: #0A0A0A;
+  overflow: hidden;
   font-family: 'Poppins', sans-serif;
+  color: #F5F0E6;
 }
 
 /* App container */
@@ -21,5 +22,5 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: none;
+  background: #0A0A0A;
 }

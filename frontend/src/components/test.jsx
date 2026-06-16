@@ -11,9 +11,9 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <h1>Frontend Connected ✅</h1>
-      <p>Message from backend: {msg}</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-cream font-poppins p-8">
+      <h1 className="text-2xl font-bold text-brown-light mb-2">Frontend Connected ✅</h1>
+      <p className="text-cream-muted">Message from backend: {msg}</p>
     </div>
   );
 }

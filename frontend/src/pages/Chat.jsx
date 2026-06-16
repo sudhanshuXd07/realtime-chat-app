@@ -175,25 +175,25 @@ function Chat() {
   };
 
   return (
-  <div className="h-screen w-full flex bg-gradient-to-br from-[#0f0a1f] via-[#1a0f2e] to-[#0b0615] text-white font-sans">
+  <div className="h-screen w-full flex bg-gradient-to-br from-black via-black-light to-brown-deeper text-cream font-poppins">
 
     {/* Sidebar */}
-    <div className="w-1/4 bg-white/5 backdrop-blur-lg border-r border-purple-900 flex flex-col shadow-2xl">
+    <div className="w-1/4 bg-black-soft border-r border-brown/30 flex flex-col shadow-card">
 
       {/* Profile */}
-      <div className="flex items-center gap-3 p-4 border-b border-purple-800">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 flex items-center justify-center text-lg font-bold shadow-lg">
+      <div className="flex items-center gap-3 p-4 border-b border-brown/30">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-brown to-brown-dark flex items-center justify-center text-lg font-bold text-cream shadow-md">
           {user?.username?.[0]?.toUpperCase()}
         </div>
         <div>
-          <h2 className="text-lg font-semibold">{user?.username}</h2>
-          <p className="text-xs text-green-400">● Online</p>
+          <h2 className="text-lg font-semibold text-cream">{user?.username}</h2>
+          <p className="text-xs text-brown-light">● Online</p>
         </div>
       </div>
 
       {/* Users */}
       <div className="flex-1 overflow-y-auto p-3">
-        <h3 className="text-purple-400 text-xs mb-2 uppercase tracking-wide">People</h3>
+        <h3 className="text-cream-dim text-xs mb-2 uppercase tracking-wide">People</h3>
         <ul>
           {onlineUsers.map((u) => (
             <li
@@ -201,11 +201,11 @@ function Chat() {
               onClick={() => setActiveChat({ _id: u, username: u })}
               className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer mb-2 transition-all ${
                 activeChat?._id === u
-                  ? "bg-purple-600 shadow-lg scale-[1.02]"
-                  : "hover:bg-purple-800/40"
+                  ? "bg-brown text-cream shadow-md scale-[1.02]"
+                  : "hover:bg-black-muted text-cream-muted"
               }`}
             >
-              <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-sm">
+              <div className="w-8 h-8 rounded-full bg-brown-dark flex items-center justify-center text-sm text-cream">
                 {u[0]}
               </div>
               <span className="text-sm">
@@ -217,13 +217,13 @@ function Chat() {
       </div>
 
       {/* Logout */}
-      <div className="p-3 border-t border-purple-800">
+      <div className="p-3 border-t border-brown/30">
         <button
           onClick={() => {
             localStorage.clear();
             navigate("/");
           }}
-          className="w-full py-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 hover:scale-105 transition shadow-lg"
+          className="w-full py-2 rounded-xl bg-brown hover:bg-brown-light text-cream transition shadow-md hover:shadow-glow"
         >
           Logout
         </button>
@@ -234,28 +234,37 @@ function Chat() {
     <div className="flex-1 flex flex-col">
 
       {/* Header */}
-      <div className="h-16 flex items-center justify-between px-6 border-b border-purple-800 bg-white/5 backdrop-blur-md">
-        <h2 className="text-lg font-semibold text-purple-300">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-brown/30 bg-black-soft">
+        <h2 className="text-lg font-semibold text-cream">
           {activeChat ? activeChat.username : "Select a user"}
         </h2>
 
         <div className="flex gap-2">
           <button
             onClick={handleFindRandom}
-            className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg shadow"
+            className="bg-brown-light hover:bg-brown text-cream px-3 py-1.5 rounded-lg shadow-sm transition text-sm font-medium"
           >
             Random
           </button>
 
           {randomMode && (
             <>
-              <button onClick={handleSkip} className="bg-yellow-500 px-3 py-1 rounded-lg">
+              <button
+                onClick={handleSkip}
+                className="bg-cream text-brown-dark hover:bg-cream-dark px-3 py-1.5 rounded-lg transition text-sm font-medium"
+              >
                 Next
               </button>
-              <button onClick={handleAddFriend} className="bg-blue-500 px-3 py-1 rounded-lg">
+              <button
+                onClick={handleAddFriend}
+                className="bg-brown hover:bg-brown-light text-cream px-3 py-1.5 rounded-lg transition text-sm font-medium"
+              >
                 Add
               </button>
-              <button onClick={handleEndChat} className="bg-red-500 px-3 py-1 rounded-lg">
+              <button
+                onClick={handleEndChat}
+                className="bg-brown-deeper hover:bg-black-muted text-cream px-3 py-1.5 rounded-lg transition text-sm font-medium"
+              >
                 End
               </button>
             </>
@@ -264,7 +273,7 @@ function Chat() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-[#140a2a] via-[#1c0f3a] to-[#0c0618]">
+      <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-black-light via-black-soft to-black">
 
         {messages.map((m, i) => {
           const mine = m.sender === user?.id;
@@ -272,10 +281,10 @@ function Chat() {
           return (
             <div key={i} className={`flex mb-3 ${mine ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-lg transition ${
+                className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-md transition ${
                   mine
-                    ? "bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-br-sm"
-                    : "bg-gray-800 text-gray-200 rounded-bl-sm"
+                    ? "bg-gradient-to-r from-brown to-brown-dark text-cream rounded-br-sm"
+                    : "bg-black-muted text-cream border border-brown/20 rounded-bl-sm"
                 }`}
               >
                 <p>{m.text}</p>
@@ -288,7 +297,7 @@ function Chat() {
         })}
 
         {isPartnerTyping && (
-          <div className="text-sm text-gray-400 italic animate-pulse">
+          <div className="text-sm text-cream-dim italic animate-pulse">
             typing...
           </div>
         )}
@@ -296,7 +305,7 @@ function Chat() {
 
       {/* Input */}
       {activeChat && (
-        <div className="flex items-center gap-2 p-4 bg-white/5 backdrop-blur-md border-t border-purple-800">
+        <div className="flex items-center gap-2 p-4 bg-black-soft border-t border-brown/30">
           <input
             type="text"
             value={message}
@@ -306,18 +315,18 @@ function Chat() {
               if (!randomMode) notifyTyping(activeChat._id);
             }}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            className="flex-1 bg-gray-900/80 p-3 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+            className="flex-1 bg-cream-dark text-black placeholder:text-cream-dim p-3 rounded-xl outline-none focus:ring-2 focus:ring-brown border border-brown/20"
           />
 
           <input
             type="file"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="text-xs text-gray-400"
+            className="text-xs text-cream-dim file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-brown file:text-cream file:text-xs file:cursor-pointer"
           />
 
           <button
             onClick={sendMessage}
-            className="bg-gradient-to-r from-purple-600 to-purple-800 px-4 py-2 rounded-xl shadow hover:scale-105 transition"
+            className="bg-brown hover:bg-brown-light text-cream px-4 py-2 rounded-xl shadow-md hover:shadow-glow transition font-medium"
           >
             Send
           </button>
