@@ -422,22 +422,15 @@ function Chat() {
 
           <div className="border-b border-brown/25 bg-black/45 px-4 py-3 md:hidden">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs uppercase tracking-wide text-cream-dim">People</span>
-              <span className="text-xs text-cream-muted">{filteredPeople.length} shown</span>
+              <span className="text-xs uppercase tracking-wide text-cream-dim">Friends</span>
+              <span className="text-xs text-cream-muted">{filteredPeople.length}</span>
             </div>
-            <input
-              type="text"
-              value={peopleSearch}
-              placeholder="Search people..."
-              onChange={(e) => setPeopleSearch(e.target.value)}
-              className="mb-2 w-full rounded-xl border border-brown/20 bg-black-muted px-3 py-2 text-sm text-cream outline-none placeholder:text-cream-dim focus:ring-2 focus:ring-brown"
-            />
-            <div className="flex max-h-32 flex-col gap-2 overflow-y-auto pr-1">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {filteredPeople.map((person) => (
                 <button
                   key={person._id}
                   onClick={() => openChat(person)}
-                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm transition ${
+                  className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2 text-center text-xs transition whitespace-nowrap flex-shrink-0 ${
                     activeChat?._id === person._id
                       ? "border-brown bg-brown text-cream"
                       : "border-brown/25 bg-black-muted text-cream-muted"
@@ -446,9 +439,9 @@ function Chat() {
                   <img
                     src={person.avatar || getAvatar(person._id, person.username)}
                     alt={person.username}
-                    className="h-6 w-6 rounded-full object-cover"
+                    className="h-8 w-8 rounded-full object-cover"
                   />
-                  <span className="truncate">{person.username}</span>
+                  <span className="max-w-[60px] truncate text-[10px]">{person.username}</span>
                 </button>
               ))}
             </div>
