@@ -90,6 +90,8 @@ const io = new Server(server, {
 
 // ✅ Socket logic
 let onlineUsers = new Map();
+app.set("io", io);
+app.set("onlineUsers", onlineUsers);
 
 let waitingUsers = [];
 let activeChats = new Map();

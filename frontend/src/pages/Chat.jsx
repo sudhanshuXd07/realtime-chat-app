@@ -107,8 +107,35 @@ function Chat() {
     };
   }, [navigate]);
 
-  const sendMessage = () => {
-    if (!message.trim() || !user || !activeChat) return;
+  const sendMessage = async () => {
+    if ((!message.trim() && !file) || !user || !activeChat) return;
+
+    if (file && randomMode) {
+      alert("File sharing is available in direct chats.");
+      return;
+    }
+
+    if (file) {
+      try {
+        const data = new FormData();
+        data.append("sender", user.id);
+        data.append("receiver", activeChat._id);
+        data.append("text", message);
+        data.append("file", file);
+
+        const res = await API.post("/messages/upload", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        setMessages((prev) => [...prev, res.data]);
+        setMessage("");
+        setFile(null);
+      } catch (err) {
+        console.error(err);
+        alert(err.response?.data?.msg || "File upload failed");
+      }
+      return;
+    }
 
     if (randomMode) {
       socket.emit("sendMessage", {
@@ -411,7 +438,20 @@ function Chat() {
                         : "rounded-bl-sm border border-brown/20 bg-black-muted text-cream"
                     }`}
                   >
-                    <p className="break-words leading-relaxed">{m.text}</p>
+                    {m.file && (
+                      <a href={m.file} target="_blank" rel="noreferrer" className="mb-2 block">
+                        {/\.(png|jpe?g|gif|webp|svg)$/i.test(m.file) ? (
+                          <img
+                            src={m.file}
+                            alt="Attachment"
+                            className="max-h-72 rounded-xl border border-brown/20 object-contain"
+                          />
+                        ) : (
+                          <span className="text-sm underline">Open attachment</span>
+                        )}
+                      </a>
+                    )}
+                    {m.text && <p className="break-words leading-relaxed">{m.text}</p>}
                     <span className="mt-1 block text-right text-[10px] opacity-70">
                       {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ""}
                     </span>
@@ -452,6 +492,7 @@ function Chat() {
                     Attach
                     <input
                       type="file"
+                      accept="image/*"
                       onChange={(e) => setFile(e.target.files?.[0] || null)}
                       className="hidden"
                     />
