@@ -1,5 +1,6 @@
 import express from "express";
 import fs from "fs";
+import mongoose from "mongoose";
 import multer from "multer";
 import path from "path";
 import User from "../models/User.js";
@@ -29,6 +30,24 @@ const uploadAvatar = multer({
 
     cb(null, true);
   },
+});
+
+router.get("/random", verifyToken, async (req, res) => {
+  try {
+    const [randomUser] = await User.aggregate([
+      { $match: { _id: { $ne: new mongoose.Types.ObjectId(req.user.id) } } },
+      { $sample: { size: 1 } },
+      { $project: { password: 0 } },
+    ]);
+
+    if (!randomUser) {
+      return res.status(404).json({ msg: "No other registered users found" });
+    }
+
+    res.json(randomUser);
+  } catch (err) {
+    res.status(500).json({ msg: "Error finding random user", error: err.message });
+  }
 });
 
 router.get("/", verifyToken, async (req, res) => {

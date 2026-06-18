@@ -175,8 +175,24 @@ function Chat() {
     setTypingTimeout(t);
   };
 
-  const handleFindRandom = () => {
-    socket.emit("find_random", user.id);
+  const handleFindRandom = async () => {
+    try {
+      const res = await API.get("/users/random");
+      const randomUser = res.data;
+
+      setRandomMode(false);
+      setRoomId(null);
+      setPartnerId(randomUser._id);
+      setActiveChat({ _id: randomUser._id, username: randomUser.username });
+      setContacts((prev) => {
+        const exists = prev.some((contact) => contact._id === randomUser._id);
+        return exists ? prev : [...prev, randomUser];
+      });
+      setFile(null);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.msg || "Could not find a random user");
+    }
   };
 
   const handleSkip = () => {
