@@ -7,6 +7,22 @@ const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || "https://realtime-chat-app-1-p6hq.onrender.com";
 const socket = io(SOCKET_URL);
 
+const fallbackAvatar = (seed = "U") => {
+  const label = seed.trim().slice(0, 2).toUpperCase().replace(/[<>&"]/g, "") || "U";
+  const colors = [
+    ["#7B4B28", "#E8DFD0"],
+    ["#2563EB", "#DBEAFE"],
+    ["#059669", "#D1FAE5"],
+    ["#DC2626", "#FEE2E2"],
+    ["#9333EA", "#F3E8FF"],
+  ];
+  const index = [...seed].reduce((sum, char) => sum + char.charCodeAt(0), 0) % colors.length;
+  const [bg, fg] = colors[index];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="36" fill="${bg}"/><circle cx="34" cy="30" r="38" fill="${fg}" opacity=".24"/><circle cx="98" cy="104" r="46" fill="#111827" opacity=".2"/><text x="64" y="76" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="700" fill="${fg}">${label}</text></svg>`;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
+
 function Chat() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -16,6 +32,7 @@ function Chat() {
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [file, setFile] = useState(null);
+  const [contacts, setContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [randomMode, setRandomMode] = useState(false);
   const [roomId, setRoomId] = useState(null);
@@ -32,11 +49,11 @@ function Chat() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (user) {
-      API.get("/users", { headers: { Authorization: `Bearer ${token}` } }).catch((err) =>
-        console.error("Error fetching users:", err)
-      );
-    }
+    if (!user) return;
+
+    API.get("/users", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setContacts(res.data))
+      .catch((err) => console.error("Error fetching users:", err));
   }, [user]);
 
   useEffect(() => {
@@ -158,15 +175,54 @@ function Chat() {
     }
   };
 
+  const getUserDetails = (id) => {
+    if (id === user?.id) return user;
+    return contacts.find((contact) => contact._id === id || contact.id === id);
+  };
+
+  const getDisplayName = (id) => {
+    if (id === user?.id) return "You";
+    return getUserDetails(id)?.username || id?.slice(0, 12) || "User";
+  };
+
+  const getAvatar = (id, name) => {
+    const details = getUserDetails(id);
+    return details?.avatar || fallbackAvatar(name || details?.username || id);
+  };
+
+  const handleAvatarChange = async (e) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    try {
+      const data = new FormData();
+      data.append("avatar", selectedFile);
+
+      const res = await API.patch("/users/me/avatar", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.msg || "Could not update profile picture");
+    } finally {
+      e.target.value = "";
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-black via-black-light to-brown-deeper p-4 text-cream font-poppins sm:p-6 lg:p-8">
       <div className="mx-auto flex h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-2xl border border-brown/25 bg-black-soft/90 shadow-card backdrop-blur sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)]">
         <aside className="hidden w-72 shrink-0 flex-col border-r border-brown/25 bg-black/55 md:flex lg:w-80">
           <div className="border-b border-brown/25 p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-brown to-brown-dark text-lg font-bold text-cream shadow-md">
-                {user?.username?.[0]?.toUpperCase()}
-              </div>
+              <img
+                src={user?.avatar || fallbackAvatar(user?.username)}
+                alt={user?.username || "Profile"}
+                className="h-12 w-12 shrink-0 rounded-full border border-brown/30 object-cover shadow-md"
+              />
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-semibold text-cream">{user?.username}</h2>
                 <p className="mt-1 flex items-center gap-2 text-xs text-brown-light">
@@ -175,6 +231,15 @@ function Chat() {
                 </p>
               </div>
             </div>
+            <label className="mt-4 inline-flex cursor-pointer rounded-lg border border-brown/30 px-3 py-2 text-xs font-medium text-cream-muted transition hover:bg-black-muted hover:text-cream">
+              Change photo
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+              />
+            </label>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4">
@@ -189,19 +254,21 @@ function Chat() {
               {onlineUsers.map((u) => (
                 <li
                   key={u}
-                  onClick={() => setActiveChat({ _id: u, username: u })}
+                  onClick={() => setActiveChat({ _id: u, username: getDisplayName(u) })}
                   className={`flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all ${
                     activeChat?._id === u
                       ? "bg-brown text-cream shadow-md"
                       : "text-cream-muted hover:bg-black-muted hover:text-cream"
                   }`}
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brown-dark text-sm font-semibold text-cream">
-                    {u[0]}
-                  </div>
+                  <img
+                    src={getAvatar(u, getDisplayName(u))}
+                    alt={getDisplayName(u)}
+                    className="h-9 w-9 shrink-0 rounded-full border border-brown/25 object-cover"
+                  />
                   <div className="min-w-0">
                     <span className="block truncate text-sm font-medium">
-                      {u === user?.id ? "You" : u.slice(0, 12)}
+                      {getDisplayName(u)}
                     </span>
                     <span className="text-[11px] text-cream-dim">
                       {u === user?.id ? "Your account" : "Available"}
@@ -231,9 +298,18 @@ function Chat() {
               <p className="mb-1 text-xs uppercase tracking-wide text-cream-dim">
                 {randomMode ? "Random chat" : "Direct message"}
               </p>
-              <h2 className="truncate text-xl font-semibold text-cream">
-                {activeChat ? activeChat.username : "Select a user"}
-              </h2>
+              <div className="flex items-center gap-3">
+                {activeChat && (
+                  <img
+                    src={getAvatar(activeChat._id, activeChat.username)}
+                    alt={activeChat.username}
+                    className="h-10 w-10 shrink-0 rounded-full border border-brown/25 object-cover"
+                  />
+                )}
+                <h2 className="truncate text-xl font-semibold text-cream">
+                  {activeChat ? activeChat.username : "Select a user"}
+                </h2>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -278,14 +354,19 @@ function Chat() {
               {onlineUsers.map((u) => (
                 <button
                   key={u}
-                  onClick={() => setActiveChat({ _id: u, username: u })}
-                  className={`shrink-0 rounded-full border px-3 py-2 text-sm transition ${
+                  onClick={() => setActiveChat({ _id: u, username: getDisplayName(u) })}
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm transition ${
                     activeChat?._id === u
                       ? "border-brown bg-brown text-cream"
                       : "border-brown/25 bg-black-muted text-cream-muted"
                   }`}
                 >
-                  {u === user?.id ? "You" : u.slice(0, 8)}
+                  <img
+                    src={getAvatar(u, getDisplayName(u))}
+                    alt={getDisplayName(u)}
+                    className="h-6 w-6 rounded-full object-cover"
+                  />
+                  {getDisplayName(u)}
                 </button>
               ))}
             </div>
@@ -309,9 +390,20 @@ function Chat() {
 
             {messages.map((m, i) => {
               const mine = m.sender === user?.id;
+              const senderName = getDisplayName(m.sender);
 
               return (
-                <div key={i} className={`mb-3 flex ${mine ? "justify-end" : "justify-start"}`}>
+                <div
+                  key={i}
+                  className={`mb-3 flex items-end gap-2 ${mine ? "justify-end" : "justify-start"}`}
+                >
+                  {!mine && (
+                    <img
+                      src={getAvatar(m.sender, senderName)}
+                      alt={senderName}
+                      className="h-8 w-8 shrink-0 rounded-full border border-brown/20 object-cover"
+                    />
+                  )}
                   <div
                     className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm shadow-md transition sm:max-w-[70%] ${
                       mine
@@ -324,6 +416,13 @@ function Chat() {
                       {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ""}
                     </span>
                   </div>
+                  {mine && (
+                    <img
+                      src={getAvatar(user?.id, user?.username)}
+                      alt={user?.username || "You"}
+                      className="h-8 w-8 shrink-0 rounded-full border border-brown/20 object-cover"
+                    />
+                  )}
                 </div>
               );
             })}
