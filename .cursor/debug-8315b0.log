@@ -5,3 +5,28 @@
 {"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600383057,"hypothesisId":"A","runId":"post-fix"}
 {"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600634861,"hypothesisId":"A","runId":"post-fix"}
 {"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"g0iiKYd4hSR8g37wAAAD"},"timestamp":1781600635401,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"RFfQU2Lm5LHvE6OTAAAF"},"timestamp":1781600725809,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600725834,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:fetchContacts","message":"contacts loaded","data":{"count":1},"timestamp":1781600799215,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"55LAatW6PCAH4P_zAAAH"},"timestamp":1781604395481,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781628139457,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"LC1Tto_WMJr4AbsmAAAC"},"timestamp":1781628142040,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781636194245,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"c3araRedVnwuiNoQAAAC"},"timestamp":1781636198943,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781675962314,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"Wyx0B26rlawl-GwOAAAC"},"timestamp":1781675967210,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781677970879,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"PfpASDEh80p56YiVAAAC"},"timestamp":1781677974877,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781683639800,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"qKYnU4hFxNMEFPblAAAC"},"timestamp":1781683644022,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"xhr poll error"},"timestamp":1781689938787,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"xhr poll error"},"timestamp":1781689950959,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781689975669,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"iC9VwK0j2hDSgGZ7AAAC"},"timestamp":1781689982260,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"axios.js:responseError","message":"API request failed","data":{"url":"/users","status":401,"msg":"Invalid token"},"timestamp":1781690124728,"hypothesisId":"A","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"0rXY-TXcqNU5RmWxAAAE"},"timestamp":1781690125218,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781695505553,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781695528546,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"fxLV0YtBXEF83QuoAAAC"},"timestamp":1781695534710,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connect error","data":{"error":"timeout"},"timestamp":1781711091322,"hypothesisId":"D","runId":"post-fix"}
+{"sessionId":"8315b0","location":"Chat.jsx:socket","message":"socket connected","data":{"socketId":"pyXHyBKD9FDz8IcYAAAC"},"timestamp":1781711096338,"hypothesisId":"D","runId":"post-fix"}

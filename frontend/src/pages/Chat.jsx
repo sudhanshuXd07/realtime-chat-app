@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "../api/axios";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://realtime-chat-app-1-p6hq.onrender.com";
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || "https://realtime-chat-app-1-p6hq.onrender.com";
 const socket = io(SOCKET_URL);
 
 function Chat() {
@@ -15,36 +16,29 @@ function Chat() {
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [file, setFile] = useState(null);
-  const [contacts, setContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [randomMode, setRandomMode] = useState(false);
   const [roomId, setRoomId] = useState(null);
   const [partnerId, setPartnerId] = useState(null);
 
-  // Load chat history
   useEffect(() => {
     if (!user || !activeChat) return;
+
     API.get(`/messages/${user.id}/${activeChat._id}`)
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("History fetch failed:", err));
   }, [activeChat, user]);
 
-  // Fetch contacts
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (user) {
-      API.get("/users", { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => {
-          // #region agent log
-          fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:fetchContacts',message:'contacts loaded',data:{count:res.data?.length},timestamp:Date.now(),hypothesisId:'A',runId:'post-fix'})}).catch(()=>{});
-          // #endregion
-          setContacts(res.data);
-        })
-        .catch((err) => console.error("Error fetching users:", err));
+      API.get("/users", { headers: { Authorization: `Bearer ${token}` } }).catch((err) =>
+        console.error("Error fetching users:", err)
+      );
     }
   }, [user]);
 
-  // Socket setup
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -58,20 +52,11 @@ function Chat() {
     setUser(parsedUser);
     socket.emit("join", parsedUser.id);
 
-    // #region agent log
-    const onConnect = () => fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:socket',message:'socket connected',data:{socketId:socket.id},timestamp:Date.now(),hypothesisId:'D',runId:'post-fix'})}).catch(()=>{});
-    const onConnectError = (err) => fetch('http://127.0.0.1:7553/ingest/a0c42aab-7475-43a0-8a56-ebfbce0f7080',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8315b0'},body:JSON.stringify({sessionId:'8315b0',location:'Chat.jsx:socket',message:'socket connect error',data:{error:err?.message},timestamp:Date.now(),hypothesisId:'D',runId:'post-fix'})}).catch(()=>{});
-    socket.on("connect", onConnect);
-    socket.on("connect_error", onConnectError);
-    // #endregion
-
     socket.on("online_users", (users) => setOnlineUsers(users));
     socket.on("typing", ({ sender, isTyping }) => {
       if (sender !== parsedUser.id) setIsPartnerTyping(isTyping);
     });
-    socket.on("receive_message", (msg) =>
-      setMessages((prev) => [...prev, msg])
-    );
+    socket.on("receive_message", (msg) => setMessages((prev) => [...prev, msg]));
 
     socket.on("chat_started", (data) => {
       setRoomId(data.roomId);
@@ -85,7 +70,7 @@ function Chat() {
     });
 
     socket.on("partner_skipped", () => {
-      alert("Partner skipped 😢");
+      alert("Partner skipped");
       setMessages([]);
     });
 
@@ -96,8 +81,6 @@ function Chat() {
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("connect_error");
       socket.off("online_users");
       socket.off("receive_message");
       socket.off("typing");
@@ -138,6 +121,7 @@ function Chat() {
 
     setMessage("");
   };
+
   const notifyTyping = (receiverId) => {
     socket.emit("typing", { sender: user.id, receiver: receiverId, isTyping: true });
     if (typingTimeout) clearTimeout(typingTimeout);
@@ -168,173 +152,232 @@ function Chat() {
         senderId: user.id,
         receiverId: partnerId,
       });
-      alert("Friend added ✅");
+      alert("Friend added");
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-  <div className="h-screen w-full flex bg-gradient-to-br from-black via-black-light to-brown-deeper text-cream font-poppins">
-
-    {/* Sidebar */}
-    <div className="w-1/4 bg-black-soft border-r border-brown/30 flex flex-col shadow-card">
-
-      {/* Profile */}
-      <div className="flex items-center gap-3 p-4 border-b border-brown/30">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-brown to-brown-dark flex items-center justify-center text-lg font-bold text-cream shadow-md">
-          {user?.username?.[0]?.toUpperCase()}
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold text-cream">{user?.username}</h2>
-          <p className="text-xs text-brown-light">● Online</p>
-        </div>
-      </div>
-
-      {/* Users */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <h3 className="text-cream-dim text-xs mb-2 uppercase tracking-wide">People</h3>
-        <ul>
-          {onlineUsers.map((u) => (
-            <li
-              key={u}
-              onClick={() => setActiveChat({ _id: u, username: u })}
-              className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer mb-2 transition-all ${
-                activeChat?._id === u
-                  ? "bg-brown text-cream shadow-md scale-[1.02]"
-                  : "hover:bg-black-muted text-cream-muted"
-              }`}
-            >
-              <div className="w-8 h-8 rounded-full bg-brown-dark flex items-center justify-center text-sm text-cream">
-                {u[0]}
+    <div className="min-h-screen w-full bg-gradient-to-br from-black via-black-light to-brown-deeper p-4 text-cream font-poppins sm:p-6 lg:p-8">
+      <div className="mx-auto flex h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-2xl border border-brown/25 bg-black-soft/90 shadow-card backdrop-blur sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)]">
+        <aside className="hidden w-72 shrink-0 flex-col border-r border-brown/25 bg-black/55 md:flex lg:w-80">
+          <div className="border-b border-brown/25 p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-brown to-brown-dark text-lg font-bold text-cream shadow-md">
+                {user?.username?.[0]?.toUpperCase()}
               </div>
-              <span className="text-sm">
-                {u === user?.id ? "You" : u.slice(0, 8)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Logout */}
-      <div className="p-3 border-t border-brown/30">
-        <button
-          onClick={() => {
-            localStorage.clear();
-            navigate("/");
-          }}
-          className="w-full py-2 rounded-xl bg-brown hover:bg-brown-light text-cream transition shadow-md hover:shadow-glow"
-        >
-          Logout
-        </button>
-      </div>
-    </div>
-
-    {/* Chat Area */}
-    <div className="flex-1 flex flex-col">
-
-      {/* Header */}
-      <div className="h-16 flex items-center justify-between px-6 border-b border-brown/30 bg-black-soft">
-        <h2 className="text-lg font-semibold text-cream">
-          {activeChat ? activeChat.username : "Select a user"}
-        </h2>
-
-        <div className="flex gap-2">
-          <button
-            onClick={handleFindRandom}
-            className="bg-brown-light hover:bg-brown text-cream px-3 py-1.5 rounded-lg shadow-sm transition text-sm font-medium"
-          >
-            Random
-          </button>
-
-          {randomMode && (
-            <>
-              <button
-                onClick={handleSkip}
-                className="bg-cream text-brown-dark hover:bg-cream-dark px-3 py-1.5 rounded-lg transition text-sm font-medium"
-              >
-                Next
-              </button>
-              <button
-                onClick={handleAddFriend}
-                className="bg-brown hover:bg-brown-light text-cream px-3 py-1.5 rounded-lg transition text-sm font-medium"
-              >
-                Add
-              </button>
-              <button
-                onClick={handleEndChat}
-                className="bg-brown-deeper hover:bg-black-muted text-cream px-3 py-1.5 rounded-lg transition text-sm font-medium"
-              >
-                End
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-black-light via-black-soft to-black">
-
-        {messages.map((m, i) => {
-          const mine = m.sender === user?.id;
-
-          return (
-            <div key={i} className={`flex mb-3 ${mine ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-md transition ${
-                  mine
-                    ? "bg-gradient-to-r from-brown to-brown-dark text-cream rounded-br-sm"
-                    : "bg-black-muted text-cream border border-brown/20 rounded-bl-sm"
-                }`}
-              >
-                <p>{m.text}</p>
-                <span className="block text-[10px] opacity-70 mt-1 text-right">
-                  {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ""}
-                </span>
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-semibold text-cream">{user?.username}</h2>
+                <p className="mt-1 flex items-center gap-2 text-xs text-brown-light">
+                  <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,0.55)]" />
+                  Online
+                </p>
               </div>
             </div>
-          );
-        })}
-
-        {isPartnerTyping && (
-          <div className="text-sm text-cream-dim italic animate-pulse">
-            typing...
           </div>
-        )}
+
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-xs uppercase tracking-wide text-cream-dim">People</h3>
+              <span className="rounded-full bg-black-muted px-2 py-1 text-[11px] text-cream-muted">
+                {onlineUsers.length} online
+              </span>
+            </div>
+
+            <ul className="space-y-2">
+              {onlineUsers.map((u) => (
+                <li
+                  key={u}
+                  onClick={() => setActiveChat({ _id: u, username: u })}
+                  className={`flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all ${
+                    activeChat?._id === u
+                      ? "bg-brown text-cream shadow-md"
+                      : "text-cream-muted hover:bg-black-muted hover:text-cream"
+                  }`}
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brown-dark text-sm font-semibold text-cream">
+                    {u[0]}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {u === user?.id ? "You" : u.slice(0, 12)}
+                    </span>
+                    <span className="text-[11px] text-cream-dim">
+                      {u === user?.id ? "Your account" : "Available"}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="border-t border-brown/25 p-4">
+            <button
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
+              className="w-full rounded-xl bg-brown px-4 py-3 font-medium text-cream shadow-md transition hover:bg-brown-light hover:shadow-glow"
+            >
+              Logout
+            </button>
+          </div>
+        </aside>
+
+        <main className="flex min-w-0 flex-1 flex-col">
+          <div className="flex min-h-20 flex-col gap-3 border-b border-brown/25 bg-black-soft px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="mb-1 text-xs uppercase tracking-wide text-cream-dim">
+                {randomMode ? "Random chat" : "Direct message"}
+              </p>
+              <h2 className="truncate text-xl font-semibold text-cream">
+                {activeChat ? activeChat.username : "Select a user"}
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handleFindRandom}
+                className="rounded-lg bg-brown-light px-4 py-2 text-sm font-medium text-cream shadow-sm transition hover:bg-brown"
+              >
+                Random
+              </button>
+
+              {randomMode && (
+                <>
+                  <button
+                    onClick={handleSkip}
+                    className="rounded-lg bg-cream px-4 py-2 text-sm font-medium text-brown-dark transition hover:bg-cream-dark"
+                  >
+                    Next
+                  </button>
+                  <button
+                    onClick={handleAddFriend}
+                    className="rounded-lg bg-brown px-4 py-2 text-sm font-medium text-cream transition hover:bg-brown-light"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={handleEndChat}
+                    className="rounded-lg bg-black-muted px-4 py-2 text-sm font-medium text-cream transition hover:bg-brown-deeper"
+                  >
+                    End
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="border-b border-brown/25 bg-black/45 px-4 py-3 md:hidden">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-wide text-cream-dim">People</span>
+              <span className="text-xs text-cream-muted">{onlineUsers.length} online</span>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {onlineUsers.map((u) => (
+                <button
+                  key={u}
+                  onClick={() => setActiveChat({ _id: u, username: u })}
+                  className={`shrink-0 rounded-full border px-3 py-2 text-sm transition ${
+                    activeChat?._id === u
+                      ? "border-brown bg-brown text-cream"
+                      : "border-brown/25 bg-black-muted text-cream-muted"
+                  }`}
+                >
+                  {u === user?.id ? "You" : u.slice(0, 8)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto bg-gradient-to-b from-black-light via-black-soft to-black px-4 py-5 sm:px-6">
+            {messages.length === 0 && (
+              <div className="flex h-full items-center justify-center text-center">
+                <div className="max-w-sm rounded-2xl border border-brown/20 bg-black/35 p-6 shadow-card">
+                  <h3 className="text-lg font-semibold text-cream">
+                    {activeChat ? "Start the conversation" : "Choose someone to chat with"}
+                  </h3>
+                  <p className="mt-2 text-sm text-cream-dim">
+                    {activeChat
+                      ? "Send a message when you are ready."
+                      : "Pick a person from the sidebar or try a random chat."}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {messages.map((m, i) => {
+              const mine = m.sender === user?.id;
+
+              return (
+                <div key={i} className={`mb-3 flex ${mine ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm shadow-md transition sm:max-w-[70%] ${
+                      mine
+                        ? "rounded-br-sm bg-gradient-to-r from-brown to-brown-dark text-cream"
+                        : "rounded-bl-sm border border-brown/20 bg-black-muted text-cream"
+                    }`}
+                  >
+                    <p className="break-words leading-relaxed">{m.text}</p>
+                    <span className="mt-1 block text-right text-[10px] opacity-70">
+                      {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ""}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {isPartnerTyping && (
+              <div className="text-sm italic text-cream-dim animate-pulse">typing...</div>
+            )}
+          </div>
+
+          {activeChat && (
+            <div className="border-t border-brown/25 bg-black-soft p-4 sm:p-5">
+              <div className="flex flex-col gap-3 rounded-2xl border border-brown/20 bg-black/45 p-3 sm:flex-row sm:items-center">
+                <input
+                  type="text"
+                  value={message}
+                  placeholder="Type a message..."
+                  onChange={(e) => {
+                    setMessage(e.target.value);
+                    if (!randomMode) notifyTyping(activeChat._id);
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  className="min-h-12 flex-1 rounded-xl border border-brown/20 bg-cream-dark px-4 text-black outline-none placeholder:text-cream-dim focus:ring-2 focus:ring-brown"
+                />
+
+                <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+                  <label className="cursor-pointer rounded-xl border border-brown/30 px-3 py-2 text-sm text-cream-muted transition hover:bg-black-muted hover:text-cream">
+                    Attach
+                    <input
+                      type="file"
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {file && (
+                    <span className="max-w-36 truncate rounded-full bg-black-muted px-3 py-2 text-xs text-cream-dim">
+                      {file.name}
+                    </span>
+                  )}
+
+                  <button
+                    onClick={sendMessage}
+                    className="min-h-11 rounded-xl bg-brown px-5 font-medium text-cream shadow-md transition hover:bg-brown-light hover:shadow-glow"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
-
-      {/* Input */}
-      {activeChat && (
-        <div className="flex items-center gap-2 p-4 bg-black-soft border-t border-brown/30">
-          <input
-            type="text"
-            value={message}
-            placeholder="Type a message..."
-            onChange={(e) => {
-              setMessage(e.target.value);
-              if (!randomMode) notifyTyping(activeChat._id);
-            }}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            className="flex-1 bg-cream-dark text-black placeholder:text-cream-dim p-3 rounded-xl outline-none focus:ring-2 focus:ring-brown border border-brown/20"
-          />
-
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="text-xs text-cream-dim file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-brown file:text-cream file:text-xs file:cursor-pointer"
-          />
-
-          <button
-            onClick={sendMessage}
-            className="bg-brown hover:bg-brown-light text-cream px-4 py-2 rounded-xl shadow-md hover:shadow-glow transition font-medium"
-          >
-            Send
-          </button>
-        </div>
-      )}
     </div>
-  </div>
-);
+  );
 }
 
 export default Chat;
