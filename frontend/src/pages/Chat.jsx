@@ -33,6 +33,7 @@ function Chat() {
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [file, setFile] = useState(null);
   const [contacts, setContacts] = useState([]);
+  const [peopleSearch, setPeopleSearch] = useState("");
   const [activeChat, setActiveChat] = useState(null);
   const [randomMode, setRandomMode] = useState(false);
   const [roomId, setRoomId] = useState(null);
@@ -218,6 +219,11 @@ function Chat() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   const getUserDetails = (id) => {
     if (id === user?.id) return user;
     return contacts.find((contact) => contact._id === id || contact.id === id);
@@ -255,10 +261,27 @@ function Chat() {
     }
   };
 
+  const people = contacts.length
+    ? contacts
+    : onlineUsers
+        .filter((id) => id !== user?.id)
+        .map((id) => ({ _id: id, username: getDisplayName(id), avatar: getAvatar(id) }));
+
+  const filteredPeople = people.filter((person) =>
+    person.username?.toLowerCase().includes(peopleSearch.trim().toLowerCase())
+  );
+
+  const openChat = (person) => {
+    setActiveChat({ _id: person._id, username: person.username });
+    setRandomMode(false);
+    setRoomId(null);
+    setPartnerId(person._id);
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-black via-black-light to-brown-deeper p-4 text-cream font-poppins sm:p-6 lg:p-8">
       <div className="mx-auto flex h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-2xl border border-brown/25 bg-black-soft/90 shadow-card backdrop-blur sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)]">
-        <aside className="hidden w-72 shrink-0 flex-col border-r border-brown/25 bg-black/55 md:flex lg:w-80">
+        <aside className="hidden min-h-0 w-72 shrink-0 flex-col border-r border-brown/25 bg-black/55 md:flex lg:w-80">
           <div className="border-b border-brown/25 p-5">
             <div className="flex items-center gap-3">
               <img
@@ -285,36 +308,42 @@ function Chat() {
             </label>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="min-h-0 flex-1 overflow-y-auto p-4">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-xs uppercase tracking-wide text-cream-dim">People</h3>
               <span className="rounded-full bg-black-muted px-2 py-1 text-[11px] text-cream-muted">
-                {onlineUsers.length} online
+                {filteredPeople.length} shown
               </span>
             </div>
 
+            <input
+              type="text"
+              value={peopleSearch}
+              placeholder="Search people..."
+              onChange={(e) => setPeopleSearch(e.target.value)}
+              className="mb-3 w-full rounded-xl border border-brown/20 bg-black-muted px-3 py-2 text-sm text-cream outline-none placeholder:text-cream-dim focus:ring-2 focus:ring-brown"
+            />
+
             <ul className="space-y-2">
-              {onlineUsers.map((u) => (
+              {filteredPeople.map((person) => (
                 <li
-                  key={u}
-                  onClick={() => setActiveChat({ _id: u, username: getDisplayName(u) })}
+                  key={person._id}
+                  onClick={() => openChat(person)}
                   className={`flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all ${
-                    activeChat?._id === u
+                    activeChat?._id === person._id
                       ? "bg-brown text-cream shadow-md"
                       : "text-cream-muted hover:bg-black-muted hover:text-cream"
                   }`}
                 >
                   <img
-                    src={getAvatar(u, getDisplayName(u))}
-                    alt={getDisplayName(u)}
+                    src={person.avatar || getAvatar(person._id, person.username)}
+                    alt={person.username}
                     className="h-9 w-9 shrink-0 rounded-full border border-brown/25 object-cover"
                   />
                   <div className="min-w-0">
-                    <span className="block truncate text-sm font-medium">
-                      {getDisplayName(u)}
-                    </span>
+                    <span className="block truncate text-sm font-medium">{person.username}</span>
                     <span className="text-[11px] text-cream-dim">
-                      {u === user?.id ? "Your account" : "Available"}
+                      {onlineUsers.includes(person._id) ? "Online" : "Registered"}
                     </span>
                   </div>
                 </li>
@@ -324,10 +353,7 @@ function Chat() {
 
           <div className="border-t border-brown/25 p-4">
             <button
-              onClick={() => {
-                localStorage.clear();
-                navigate("/");
-              }}
+              onClick={handleLogout}
               className="w-full rounded-xl bg-brown px-4 py-3 font-medium text-cream shadow-md transition hover:bg-brown-light hover:shadow-glow"
             >
               Logout
@@ -335,7 +361,7 @@ function Chat() {
           </div>
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div className="flex min-h-20 flex-col gap-3 border-b border-brown/25 bg-black-soft px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="mb-1 text-xs uppercase tracking-wide text-cream-dim">
@@ -385,31 +411,44 @@ function Chat() {
                   </button>
                 </>
               )}
+              <button
+                onClick={handleLogout}
+                className="rounded-lg bg-black-muted px-4 py-2 text-sm font-medium text-cream transition hover:bg-brown-deeper md:hidden"
+              >
+                Logout
+              </button>
             </div>
           </div>
 
           <div className="border-b border-brown/25 bg-black/45 px-4 py-3 md:hidden">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs uppercase tracking-wide text-cream-dim">People</span>
-              <span className="text-xs text-cream-muted">{onlineUsers.length} online</span>
+              <span className="text-xs text-cream-muted">{filteredPeople.length} shown</span>
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {onlineUsers.map((u) => (
+            <input
+              type="text"
+              value={peopleSearch}
+              placeholder="Search people..."
+              onChange={(e) => setPeopleSearch(e.target.value)}
+              className="mb-2 w-full rounded-xl border border-brown/20 bg-black-muted px-3 py-2 text-sm text-cream outline-none placeholder:text-cream-dim focus:ring-2 focus:ring-brown"
+            />
+            <div className="flex max-h-32 flex-col gap-2 overflow-y-auto pr-1">
+              {filteredPeople.map((person) => (
                 <button
-                  key={u}
-                  onClick={() => setActiveChat({ _id: u, username: getDisplayName(u) })}
-                  className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm transition ${
-                    activeChat?._id === u
+                  key={person._id}
+                  onClick={() => openChat(person)}
+                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm transition ${
+                    activeChat?._id === person._id
                       ? "border-brown bg-brown text-cream"
                       : "border-brown/25 bg-black-muted text-cream-muted"
                   }`}
                 >
                   <img
-                    src={getAvatar(u, getDisplayName(u))}
-                    alt={getDisplayName(u)}
+                    src={person.avatar || getAvatar(person._id, person.username)}
+                    alt={person.username}
                     className="h-6 w-6 rounded-full object-cover"
                   />
-                  {getDisplayName(u)}
+                  <span className="truncate">{person.username}</span>
                 </button>
               ))}
             </div>
